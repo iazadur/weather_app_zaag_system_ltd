@@ -1,25 +1,31 @@
+
 import React from 'react';
-import logo from './logo.svg';
+import {
+  BrowserRouter, Route, Routes
+} from "react-router-dom";
 import './App.css';
+import { CountryInformation } from './components/CountryInformation';
+import { Search } from './components/Search';
+export interface Icountry {
+  name: string,
+  capital: string[],
+  population: number,
+  latlng: number[],
+  flags: string
+}
 
 function App() {
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Search />} />
+        <Route path="details" element={<CountryInformation />} >
+          <Route path=":country" element={<CountryInformation />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
