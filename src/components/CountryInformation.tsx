@@ -1,8 +1,10 @@
 // @flow 
+import { Button, Card, CardContent, CardMedia, Container, Grid, Stack, Typography } from '@mui/material';
 import axios from 'axios';
 import * as React from 'react';
-import { NavLink, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Icountry } from '../App';
+
 type Props = {
 
 };
@@ -17,11 +19,11 @@ export const CountryInformation = (props: Props) => {
 	const [weatherInfo, setWeatherInfo] = React.useState<Iweather>()
 	let params = useParams();
 	console.log(params.country);
-
+	let navigate = useNavigate()
 	React.useEffect(() => {
 		axios.get(`https://restcountries.com/v3.1/name/${params.country}`)
 			.then(res => {
-				console.log(res.data);
+				console.log(res);
 				const { name, latlng, population, capital, flags } = res.data[0]
 				const Idata: Icountry = {
 					name: name?.common,
@@ -33,12 +35,18 @@ export const CountryInformation = (props: Props) => {
 				setCountryInfo(Idata)
 
 			})
-	}, [params.country])
+			.catch(error => {
+				if (error.response.data.status === 404) {
+					navigate('/not_found')
+				}
+
+			})
+	}, [params.country, navigate])
 
 	const call_weather = (capital: string | undefined) => {
 		axios.get(`http://api.weatherstack.com/current?access_key=${process.env.REACT_APP_API_KEY}&query=${capital}`)
 			.then(res => {
-				console.log(res.data);
+
 
 				const { weather_icons, temperature, wind_speed, precip } = res.data?.current
 				const weather_data: Iweather = {
@@ -49,39 +57,83 @@ export const CountryInformation = (props: Props) => {
 				}
 				setWeatherInfo(weather_data)
 			})
+			.catch(error => {
+				console.log(error.data);
+				console.log(error);
+				console.log(error.response);
+
+			})
 	}
+
+	console.log(countryInfo);
+
 	return (
 		<>
-			<div className="" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: "100vh" }}>
-				<div className="" style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: "20px" }} >
-					<div style={{ display: 'flex', flexDirection: 'column', width: "400px", gap: "10px" }}>
+			<Container maxWidth={'md'} style={{ marginTop: '200px' }}>
+				<Grid container spacing={2}>
+					<Grid item xs={6}>
 
-						{countryInfo && <>
-							<h3>Name: {countryInfo?.name}</h3>
-							<h3>Capital: {countryInfo?.capital.map(i => i + ", ")}</h3>
-							<h3>Population: {countryInfo?.population}</h3>
-							<h3>Lating: {countryInfo?.latlng.map(i => i + ", ")}</h3>
-							<img src={countryInfo?.flags} alt="" /></>}
-					</div>
+						{countryInfo &&
+							<>
+								<Card sx={{ maxWidth: 345 }}>
+									<CardMedia
+										component="img"
+										height="140"
+										image={countryInfo?.flags}
+										alt="green iguana"
+									/>
+									<CardContent>
+										<Typography gutterBottom variant="h5" component="div">
+											Name: {countryInfo?.name}
+										</Typography>
+										<Typography variant="body2" color="text.secondary">
+											Capital: {countryInfo?.capital.map(i => i + ", ")}
+										</Typography>
+										<Typography variant="body2" color="text.secondary">
+											Population: {countryInfo?.population}
+										</Typography>
+										<Typography variant="body2" color="text.secondary">
+											Lating: {`latitude: ${countryInfo?.latlng[0]} longitude: ${countryInfo?.latlng[1]}`}
+										</Typography>
+									</CardContent>
 
-					<div style={{ display: 'flex', flexDirection: 'column', width: "400px", gap: "10px" }}>
+								</Card>
+							</>}
+					</Grid>
+					<Grid item xs={6}>
+						<Stack component={'div'} spacing={2} direction='column'>
 
-						<button onClick={() => call_weather(countryInfo?.capital[0])}>Capital Weather</button>
-						{weatherInfo && <>
-							<h3>Temperature: {weatherInfo?.temperature}</h3>
-							<h3>Precip: {weatherInfo?.precip}</h3>
-							<h3>Wind Speed: {weatherInfo?.wind_speed}</h3>
+							{countryInfo && <Button onClick={() => call_weather(countryInfo?.capital[0])} variant='contained' >Capital Weather</Button>}
+							{weatherInfo && <>
+								<Card sx={{ maxWidth: 345 }}>
+									<CardMedia
+										component="img"
+										height="140"
+										src={weatherInfo?.weather_icons}
+										alt="green iguana"
+									/>
+									<CardContent>
+										<Typography gutterBottom variant="h6" component="div">
+											Temperature: {weatherInfo?.temperature}
+										</Typography>
+										<Typography variant="body2" color="text.secondary">
+											Precip: {weatherInfo?.precip}
+										</Typography>
+										<Typography variant="body2" color="text.secondary">
+											Wind Speed: {weatherInfo?.wind_speed}
+										</Typography>
 
-							<img width={200} height={200} src={weatherInfo?.weather_icons} alt="" />
-						</>}
-					</div>
+									</CardContent>
 
+								</Card>
 
-				</div>
-			</div>
-			<div className="" style={{ width: '100%', textAlign: 'center' }}>
-				<NavLink to='/' style={{ backgroundColor: 'green', color: 'white', padding: '10px 20px' }}>Go back</NavLink>
-			</div>
+							</>}
+						</Stack>
+					</Grid>
+
+				</Grid>
+			</Container>
+
 
 		</>
 	);

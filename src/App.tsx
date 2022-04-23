@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 import './App.css';
 import { CountryInformation } from './components/CountryInformation';
+import { NotFound } from './components/NotFound';
 import { Search } from './components/Search';
 export interface Icountry {
   name: string,
@@ -24,6 +25,8 @@ function App() {
         <Route path="details" element={<CountryInformation />} >
           <Route path=":country" element={<CountryInformation />} />
         </Route>
+        <Route path="/not_found" element={<NotFound />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
