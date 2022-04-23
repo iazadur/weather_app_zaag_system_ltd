@@ -26,9 +26,7 @@ export const CountryInformation = (props: Props) => {
 		setOpen(true);
 		axios.get(`https://restcountries.com/v3.1/name/${params.country}`)
 			.then(res => {
-				if (res.data) {
 
-				};
 				const { name, latlng, population, capital, flags } = res.data[0]
 				const Idata: Icountry = {
 					name: name?.common,
@@ -75,8 +73,7 @@ export const CountryInformation = (props: Props) => {
 				setOpen(false);
 			})
 			.catch(error => {
-				console.log(error.data);
-				console.log(error);
+
 				console.log(error.response);
 				setOpen(false);
 			})
