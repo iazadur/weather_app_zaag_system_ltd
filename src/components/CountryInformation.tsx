@@ -36,7 +36,7 @@ export const CountryInformation = (props: Props) => {
 	}, [params.country])
 
 	const call_weather = (capital: string | undefined) => {
-		axios.get(`http://api.weatherstack.com/current?access_key=${process.env.REACT_APP_API_KEY}&query=${capital}`)
+		axios.get(`https://api.weatherstack.com/current?access_key=${process.env.REACT_APP_API_KEY}&query=${capital}`)
 			.then(res => {
 				console.log(res.data);
 
