@@ -1,5 +1,5 @@
 // @flow 
-import { Button, Card, CardContent, CardMedia, Container, Grid, Stack, Typography } from '@mui/material';
+import { Alert, Backdrop, Button, Card, CardContent, CardMedia, CircularProgress, Container, Grid, Stack, Typography } from '@mui/material';
 import axios from 'axios';
 import * as React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -17,13 +17,17 @@ interface Iweather {
 export const CountryInformation = (props: Props) => {
 	const [countryInfo, setCountryInfo] = React.useState<Icountry>()
 	const [weatherInfo, setWeatherInfo] = React.useState<Iweather>()
+	const [open, setOpen] = React.useState(false);
 	let params = useParams();
 	console.log(params.country);
 	let navigate = useNavigate()
 	React.useEffect(() => {
+		setOpen(true);
 		axios.get(`https://restcountries.com/v3.1/name/${params.country}`)
 			.then(res => {
-				console.log(res);
+				if (res.data) {
+
+				};
 				const { name, latlng, population, capital, flags } = res.data[0]
 				const Idata: Icountry = {
 					name: name?.common,
@@ -33,17 +37,19 @@ export const CountryInformation = (props: Props) => {
 					flags: flags.png
 				}
 				setCountryInfo(Idata)
-
+				setOpen(false);
 			})
 			.catch(error => {
 				if (error.response.data.status === 404) {
 					navigate('/not_found')
+					return (<Alert severity="warning">{error.response.data.message}</Alert>)
 				}
-
+				setOpen(false);
 			})
 	}, [params.country, navigate])
 
 	const call_weather = (capital: string | undefined) => {
+		setOpen(true);
 		axios.get(`http://api.weatherstack.com/current?access_key=${process.env.REACT_APP_API_KEY}&query=${capital}`)
 			.then(res => {
 
@@ -56,16 +62,17 @@ export const CountryInformation = (props: Props) => {
 					precip: precip
 				}
 				setWeatherInfo(weather_data)
+				setOpen(false);
 			})
 			.catch(error => {
 				console.log(error.data);
 				console.log(error);
 				console.log(error.response);
-
+				setOpen(false);
 			})
 	}
 
-	console.log(countryInfo);
+
 
 	return (
 		<>
@@ -134,7 +141,12 @@ export const CountryInformation = (props: Props) => {
 				</Grid>
 			</Container>
 
-
+			<Backdrop
+				sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+				open={open}
+			>
+				<CircularProgress color="inherit" />
+			</Backdrop>
 		</>
 	);
 };
