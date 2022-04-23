@@ -36,8 +36,10 @@ export const CountryInformation = (props: Props) => {
 	}, [params.country])
 
 	const call_weather = (capital: string | undefined) => {
-		axios.get(`https://api.weatherstack.com/current?access_key=${process.env.REACT_APP_API_KEY}&query=${capital}`)
+		axios.get(`http://api.weatherstack.com/current?access_key=${process.env.REACT_APP_API_KEY}&query=${capital}`)
 			.then(res => {
+				console.log(res.data);
+
 				const { weather_icons, temperature, wind_speed, precip } = res.data?.current
 				const weather_data: Iweather = {
 					temperature: temperature,
@@ -54,21 +56,24 @@ export const CountryInformation = (props: Props) => {
 				<div className="" style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: "20px" }} >
 					<div style={{ display: 'flex', flexDirection: 'column', width: "400px", gap: "10px" }}>
 
-						<h3>Name: {countryInfo?.name}</h3>
-						<h3>Capital: {countryInfo?.capital.map(i => i + ", ")}</h3>
-						<h3>Population: {countryInfo?.population}</h3>
-						<h3>Lating: {countryInfo?.latlng.map(i => i + ", ")}</h3>
-						<img src={countryInfo?.flags} alt="" />
+						{countryInfo && <>
+							<h3>Name: {countryInfo?.name}</h3>
+							<h3>Capital: {countryInfo?.capital.map(i => i + ", ")}</h3>
+							<h3>Population: {countryInfo?.population}</h3>
+							<h3>Lating: {countryInfo?.latlng.map(i => i + ", ")}</h3>
+							<img src={countryInfo?.flags} alt="" /></>}
 					</div>
 
 					<div style={{ display: 'flex', flexDirection: 'column', width: "400px", gap: "10px" }}>
 
 						<button onClick={() => call_weather(countryInfo?.capital[0])}>Capital Weather</button>
-						<h3>Temperature: {weatherInfo?.temperature}</h3>
-						<h3>Precip: {weatherInfo?.precip}</h3>
-						<h3>Wind Speed: {weatherInfo?.wind_speed}</h3>
+						{weatherInfo && <>
+							<h3>Temperature: {weatherInfo?.temperature}</h3>
+							<h3>Precip: {weatherInfo?.precip}</h3>
+							<h3>Wind Speed: {weatherInfo?.wind_speed}</h3>
 
-						<img src={weatherInfo?.weather_icons} alt="" />
+							<img width={200} height={200} src={weatherInfo?.weather_icons} alt="" />
+						</>}
 					</div>
 
 
