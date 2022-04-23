@@ -1,4 +1,5 @@
 
+import { Container } from '@mui/material';
 import * as React from 'react';
 import not from '../assets/404.jpg';
 type Props = {
@@ -6,8 +7,8 @@ type Props = {
 };
 export const NotFound = (props: Props) => {
 	return (
-		<div>
+		<Container maxWidth={"md"}>
 			<img src={not} alt="" />
-		</div>
+		</Container>
 	);
 };

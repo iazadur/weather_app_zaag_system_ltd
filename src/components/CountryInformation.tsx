@@ -1,8 +1,9 @@
 // @flow 
-import { Alert, Backdrop, Button, Card, CardContent, CardMedia, CircularProgress, Container, Grid, Stack, Typography } from '@mui/material';
+import { Backdrop, Button, Card, CardContent, CardMedia, CircularProgress, Container, Grid, Stack, Typography } from '@mui/material';
 import axios from 'axios';
 import * as React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import { Icountry } from '../App';
 
 type Props = {
@@ -40,11 +41,20 @@ export const CountryInformation = (props: Props) => {
 				setOpen(false);
 			})
 			.catch(error => {
-				if (error.response.data.status === 404) {
-					navigate('/not_found')
-					return (<Alert severity="warning">{error.response.data.message}</Alert>)
-				}
 				setOpen(false);
+
+
+				if (error.response.data.status === 404) {
+					navigate('/not_found');
+					Swal.fire({
+						position: 'top-end',
+						icon: 'error',
+						title: 'Oops...',
+						text: error?.response?.data?.message,
+						showConfirmButton: false,
+						timer: 3500
+					})
+				}
 			})
 	}, [params.country, navigate])
 
